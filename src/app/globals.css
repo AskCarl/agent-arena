@@ -1,14 +1,175 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/* Jetsons cartoon theme – space-age, bubbly, bright */
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --bg-deep: #1a237e;
+  --bg-card: #283593;
+  --bg-elevated: #3949ab;
+  --border-subtle: rgba(255, 255, 255, 0.2);
+  --border-accent: rgba(255, 255, 255, 0.5);
+  --jetsons-blue: #29b6f6;
+  --jetsons-orange: #ff7043;
+  --jetsons-pink: #f48fb1;
+  --jetsons-teal: #26a69a;
+  --jetsons-yellow: #ffd54f;
+  --neon-cyan: #29b6f6;
+  --neon-magenta: #f48fb1;
+  --neon-purple: #7e57c2;
+  --neon-orange: #ff7043;
+  --accent-gold: #ffd54f;
+  --text-primary: #ffffff;
+  --text-muted: #c5cae9;
+  --glow-cyan: 0 4px 0 rgba(0, 0, 0, 0.2), 0 0 20px rgba(41, 182, 246, 0.3);
+  --glow-magenta: 0 4px 0 rgba(0, 0, 0, 0.2), 0 0 20px rgba(244, 143, 177, 0.3);
+  --glow-gold: 0 4px 0 rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 213, 79, 0.4);
+  --cartoon-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+  --cartoon-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+@theme inline {
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
+  --animate-scanline: scanline 8s linear infinite;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.5s ease-in-out infinite;
+  --animate-border-flow: border-flow 3s linear infinite;
+  --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
+  --animate-scale-in: scale-in 0.4s ease-out forwards;
+  --animate-text-glitch: text-glitch 0.3s ease-out;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.15); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 200% center; }
+  50% { background-position: -200% center; }
+}
+
+@keyframes border-flow {
+  0%, 100% { border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+  33% { border-color: var(--neon-magenta); box-shadow: var(--glow-magenta); }
+  66% { border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes text-glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, -2px); }
+  80% { transform: translate(2px, 2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.03; }
+  50% { opacity: 0.08; }
+}
+
+@keyframes hologram-flicker {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0.7; }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  /* Subtle shadow so all text reads clearly on dark background */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
+
+/* Jetsons-style bubble/dot overlay – very subtle so text stays readable */
+.bg-grid-pattern {
+  background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Scanline overlay (optional, light) */
+.scanline-overlay::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 0, 0, 0.02) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+}
+
+.text-neon-cyan {
+  color: var(--jetsons-blue);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.text-neon-magenta {
+  color: var(--jetsons-pink);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.glow-cyan {
+  box-shadow: var(--cartoon-shadow);
+}
+
+.glow-gold {
+  box-shadow: var(--cartoon-shadow-lg);
+}
+
+/* Cartoon-style box shadow (flat offset) */
+.cartoon-shadow {
+  box-shadow: var(--cartoon-shadow);
+}
+
+.cartoon-shadow-lg {
+  box-shadow: var(--cartoon-shadow-lg);
+}
+
+/* Stagger children for list animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }

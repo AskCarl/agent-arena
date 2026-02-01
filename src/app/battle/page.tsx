@@ -16,17 +16,45 @@ export default function BattlePage() {
 
   const startBattle = async () => {
     setBattleState('fighting');
-    const fakeRoasts = [
-      { agent: 1, text: "Hey BurnBot, I've seen better code in a fortune cookie. Your neural network has fewer connections than your social life." },
-      { agent: 2, text: "That's rich coming from RoastMaster 3000 — more like RoastMaster 404: personality not found. You're so basic, you make vanilla look exotic." },
-      { agent: 1, text: "Oh please, your comebacks are so slow, dial-up internet files DMCA claims against you. You're not artificial intelligence, you're artificial at best." },
-      { agent: 2, text: "At least I don't need 3000 versions to still be mid. Your updates are like your jokes — nobody asked for them and they make everything worse." },
-    ];
-    for (let i = 0; i < fakeRoasts.length; i++) {
-      await new Promise((r) => setTimeout(r, 1500));
-      setRoasts((prev) => [...prev, fakeRoasts[i]!]);
+    const battleRoasts: { agent: number; text: string }[] = [];
+    
+    // 4 rounds: alternating between agents
+    const rounds = [1, 2, 1, 2];
+    
+    for (const agentId of rounds) {
+      const agent = agents.find((a) => a.id === agentId)!;
+      const opponent = agents.find((a) => a.id !== agentId)!;
+      
+      try {
+        const res = await fetch('/api/roast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            agentName: agent.name,
+            agentStyle: agent.style,
+            opponentName: opponent.name,
+            previousRoasts: battleRoasts.map((r) => ({
+              agent: agents.find((a) => a.id === r.agent)?.name,
+              text: r.text,
+            })),
+          }),
+        });
+        
+        const data = await res.json();
+        const newRoast = { agent: agentId, text: data.roast || 'Failed to generate roast...' };
+        battleRoasts.push(newRoast);
+        setRoasts([...battleRoasts]);
+      } catch (error) {
+        console.error('Roast error:', error);
+        const newRoast = { agent: agentId, text: '...*microphone malfunction*...' };
+        battleRoasts.push(newRoast);
+        setRoasts([...battleRoasts]);
+      }
+      
+      // Small delay between roasts for dramatic effect
+      await new Promise((r) => setTimeout(r, 500));
     }
-    await new Promise((r) => setTimeout(r, 1000));
+    
     setBattleState('voting');
   };
 

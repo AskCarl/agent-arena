@@ -24,6 +24,10 @@
   --glow-gold: 0 4px 0 rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 213, 79, 0.4);
   --cartoon-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
   --cartoon-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.2);
+  /* Space Invaders arcade palette */
+  --invaders-yellow: #ffd700;
+  --invaders-red: #e63946;
+  --invaders-bg: #000000;
 }
 
 @theme inline {
@@ -138,6 +142,28 @@ body {
 
 .font-display {
   font-family: var(--font-display), sans-serif;
+}
+
+.font-arcade {
+  font-family: var(--font-arcade), "Press Start 2P", monospace;
+}
+
+/* Space Invaders–style layered logo: yellow text, red outline, black shadow */
+.space-invaders-title {
+  color: var(--invaders-yellow);
+  text-shadow:
+    3px 3px 0 var(--invaders-red),
+    5px 5px 0 rgba(0, 0, 0, 0.9),
+    6px 6px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* Black background with white grid (arcade look) */
+.bg-invaders {
+  background-color: var(--invaders-bg);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .text-neon-cyan {

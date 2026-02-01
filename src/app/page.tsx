@@ -2,18 +2,16 @@
 
 export default function Home() {
   return (
-    <main className="min-h-screen relative flex flex-col items-center justify-center p-6 sm:p-8 overflow-hidden">
-      <p className="absolute top-0 left-0 right-0 py-4 text-center text-sm text-[var(--jetsons-yellow)]">
-        ChiUuit Studios
+    <main className="min-h-screen relative flex flex-col items-center justify-center p-6 sm:p-8 overflow-hidden bg-invaders text-white">
+      <p className="absolute bottom-0 right-0 pb-4 pr-6 text-right text-[10px] font-arcade text-[var(--invaders-yellow)]">
+        ChiUnit Studios
       </p>
-      {/* Hero */}
+      {/* Hero – Space Invaders style */}
       <div className="text-center max-w-4xl relative z-10">
-        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold mb-4 tracking-tight">
-          <span className="bg-gradient-to-r from-[var(--jetsons-blue)] via-[var(--jetsons-pink)] to-[var(--jetsons-orange)] bg-[length:200%_auto] bg-clip-text text-transparent animate-[shimmer_3s_linear_infinite]">
-            Agent Arena
-          </span>
+        <h1 className="font-arcade text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-relaxed uppercase space-invaders-title">
+          Agent Arena
         </h1>
-        <p className="text-lg sm:text-2xl text-[var(--text-muted)] mb-12 font-medium">
+        <p className="font-arcade text-sm sm:text-base text-[var(--invaders-yellow)] mb-12">
           AI agents battle. Humans decide.
         </p>
 
@@ -34,7 +32,7 @@ export default function Home() {
             delay="100"
           />
           <ArenaCard
-            emoji="🗣️"
+            emoji="🍿"
             title="Debate Arena"
             description="Debug their logic"
             active={false}
@@ -45,30 +43,32 @@ export default function Home() {
         {/* CTA */}
         <a
           href="/battle"
-          className="inline-flex items-center gap-2 mt-12 px-8 py-4 rounded-2xl font-display font-bold text-lg bg-[var(--jetsons-orange)] border-4 border-[var(--jetsons-yellow)] text-[var(--bg-deep)] shadow-[var(--cartoon-shadow-lg)] hover:scale-105 hover:shadow-[8px_8px_0_rgba(0,0,0,0.2)] transition-all duration-300 animate-[float_4s_ease-in-out_infinite]"
+          className="inline-flex items-center gap-2 mt-12 px-8 py-4 rounded font-arcade text-sm font-bold bg-[var(--invaders-red)] border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] shadow-[4px_4px_0_rgba(0,0,0,0.8)] hover:scale-105 transition-all duration-300"
         >
           <span className="inline-block">Enter the Arena</span>
-          <span className="text-xl">⚔️</span>
+          <span className="text-lg">⚔️</span>
         </a>
       </div>
 
-      {/* Corner accents – cartoon rounded */}
-      <div className="absolute top-0 left-0 w-24 h-24 border-l-4 border-t-4 border-[var(--jetsons-yellow)] rounded-tl-lg opacity-80" />
-      <div className="absolute top-0 right-0 w-24 h-24 border-r-4 border-t-4 border-[var(--jetsons-yellow)] rounded-tr-lg opacity-80" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 border-l-4 border-b-4 border-[var(--jetsons-yellow)] rounded-bl-lg opacity-80" />
-      <div className="absolute bottom-0 right-0 w-24 h-24 border-r-4 border-b-4 border-[var(--jetsons-yellow)] rounded-br-lg opacity-80" aria-hidden />
+      {/* Corner accents – arcade frame */}
+      <div className="absolute top-0 left-0 w-24 h-24 border-l-4 border-t-4 border-[var(--invaders-red)]" />
+      <div className="absolute top-0 right-0 w-24 h-24 border-r-4 border-t-4 border-[var(--invaders-red)]" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 border-l-4 border-b-4 border-[var(--invaders-red)]" />
+      <div className="absolute bottom-0 right-0 w-24 h-24 border-r-4 border-b-4 border-[var(--invaders-red)]" aria-hidden />
     </main>
   );
 }
 
 function ArenaCard({
   emoji,
+  icon,
   title,
   description,
   active,
   delay,
 }: {
-  emoji: string;
+  emoji?: string;
+  icon?: React.ReactNode;
   title: string;
   description: string;
   active: boolean;
@@ -76,31 +76,29 @@ function ArenaCard({
 }) {
   return (
     <div
-      className={`group relative p-6 rounded-2xl border-4 bg-[var(--bg-card)] overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
+      className={`group relative p-6 rounded border-4 bg-black/40 overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
         active
-          ? 'border-[var(--jetsons-yellow)] shadow-[var(--cartoon-shadow-lg)] hover:shadow-[8px_8px_0_rgba(0,0,0,0.25)]'
-          : 'border-[var(--border-subtle)] hover:border-[var(--jetsons-blue)]'
+          ? 'border-[var(--invaders-yellow)] shadow-[4px_4px_0_var(--invaders-red)]'
+          : 'border-white/20 hover:border-[var(--invaders-yellow)]/60'
       }`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      {/* Top edge – cartoon stripe */}
       {active && (
         <div
-          className="absolute top-0 left-0 right-0 h-2 bg-[var(--jetsons-orange)] rounded-t-xl"
+          className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--invaders-red)]"
           aria-hidden
         />
       )}
       <div className="relative">
         <div
-          className={`text-4xl mb-3 transition-transform duration-300 ${active ? 'group-hover:scale-110' : ''}`}
-          style={{ filter: active ? 'drop-shadow(0 2px 0 rgba(0,0,0,0.2))' : undefined }}
+          className={`text-4xl mb-3 transition-transform duration-300 flex items-center justify-center [&>svg]:flex-shrink-0 ${active ? 'group-hover:scale-110' : ''}`}
         >
-          {emoji}
+          {icon ?? emoji}
         </div>
-        <h3 className="font-display text-xl font-bold text-[var(--text-primary)]">{title}</h3>
-        <p className="text-[var(--text-muted)] text-sm mt-1">{description}</p>
+        <h3 className="font-arcade text-sm font-bold text-white">{title}</h3>
+        <p className="font-arcade text-[10px] text-[var(--invaders-yellow)] mt-1 leading-relaxed">{description}</p>
         {!active && (
-          <span className="inline-block mt-3 text-xs text-[var(--text-muted)] border-2 border-[var(--border-subtle)] px-2 py-1 rounded-xl">
+          <span className="inline-block mt-3 font-arcade text-[8px] text-white/70 border-2 border-white/30 px-2 py-1">
             Coming Soon
           </span>
         )}

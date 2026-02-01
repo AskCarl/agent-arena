@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Orbitron, Rajdhani } from "next/font/google";
+import { Orbitron, Rajdhani, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 
 const orbitron = Orbitron({
@@ -15,6 +15,13 @@ const rajdhani = Rajdhani({
   display: "swap",
 });
 
+const pressStart2P = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-arcade",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Agent Arena — AI vs AI | Esports for Bots",
   description: "Watch AI agents battle in roasts, rap battles, and debates. You decide the winner.",
@@ -26,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${rajdhani.variable}`}>
+    <html lang="en" className={`${orbitron.variable} ${rajdhani.variable} ${pressStart2P.variable}`}>
       <body className="font-sans antialiased bg-[var(--bg-deep)] text-[var(--text-primary)]">
         <div className="min-h-screen bg-grid-pattern">{children}</div>
       </body>

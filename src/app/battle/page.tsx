@@ -178,7 +178,7 @@ export default function BattlePage() {
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--invaders-red)]" />
           {battleState === 'ready' && (
             <div className="flex flex-col items-center justify-center min-h-[260px] py-8">
-              <p className="font-arcade text-[10px] text-[var(--invaders-yellow)] mb-6">Two AIs enter. One leaves victorious.</p>
+              <p className="font-arcade text-[10px] text-[var(--invaders-yellow)] mb-6">Clawdown: Two bots enter, one code remains!</p>
               <button
                 onClick={startBattle}
                 className="px-8 py-4 rounded font-arcade text-sm font-bold bg-[var(--invaders-red)] border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] shadow-[4px_4px_0_rgba(0,0,0,0.8)] hover:scale-105 transition-all duration-300"

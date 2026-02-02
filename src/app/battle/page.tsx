@@ -22,7 +22,8 @@ export default function BattlePage() {
   }, [soundEnabled]);
 
   const startBattle = async () => {
-    soundManager.play('battleStart');
+    await soundManager.init();
+    await soundManager.play('battleStart');
     setBattleState('fighting');
     const battleRoasts: { agent: number; text: string }[] = [];
     
@@ -52,7 +53,7 @@ export default function BattlePage() {
         const newRoast = { agent: agentId, text: data.roast || 'Failed to generate roast...' };
         battleRoasts.push(newRoast);
         setRoasts([...battleRoasts]);
-        soundManager.play('roastDrop');
+        await soundManager.play('roastDrop');
       } catch (error) {
         console.error('Roast error:', error);
         const newRoast = { agent: agentId, text: '...*microphone malfunction*...' };
@@ -133,7 +134,15 @@ export default function BattlePage() {
           
           {/* Sound Toggle */}
           <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
+            onClick={async () => {
+              // Initialize audio on first interaction
+              await soundManager.init();
+              if (!soundEnabled) {
+                // Play a test sound when enabling
+                soundManager.play('vote');
+              }
+              setSoundEnabled(!soundEnabled);
+            }}
             className="absolute top-0 right-0 p-2 text-xl opacity-60 hover:opacity-100 transition-opacity"
             title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
           >

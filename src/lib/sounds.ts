@@ -1,17 +1,29 @@
 // Sound effects for Agent Arena
-// Using Web Audio API for better control and no external dependencies
+// Using Web Audio API with proper browser compatibility
 
 type SoundType = 'battleStart' | 'roastDrop' | 'winner' | 'countdown' | 'vote' | 'error';
 
 class SoundManager {
   private audioContext: AudioContext | null = null;
   private enabled: boolean = true;
+  private initialized: boolean = false;
 
-  private getContext(): AudioContext {
-    if (!this.audioContext) {
-      this.audioContext = new AudioContext();
+  // Must be called from a user interaction (click handler)
+  async init() {
+    if (this.initialized) return;
+    
+    try {
+      this.audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+      
+      this.initialized = true;
+      console.log('Audio initialized, state:', this.audioContext.state);
+    } catch (e) {
+      console.warn('Audio init failed:', e);
     }
-    return this.audioContext;
   }
 
   setEnabled(enabled: boolean) {
@@ -22,12 +34,23 @@ class SoundManager {
     return this.enabled;
   }
 
-  // Generate sounds programmatically using Web Audio API
-  play(type: SoundType) {
+  async play(type: SoundType) {
     if (!this.enabled) return;
+    
+    // Auto-init on first play (must be from user interaction)
+    if (!this.initialized) {
+      await this.init();
+    }
+
+    if (!this.audioContext) return;
+
+    // Make sure context is running
+    if (this.audioContext.state === 'suspended') {
+      await this.audioContext.resume();
+    }
 
     try {
-      const ctx = this.getContext();
+      const ctx = this.audioContext;
       
       switch (type) {
         case 'battleStart':
@@ -55,75 +78,66 @@ class SoundManager {
   }
 
   private playBattleStart(ctx: AudioContext) {
-    // Epic rising tone for battle start
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const now = ctx.currentTime;
     
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(150, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.3);
-    
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-    
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.4);
+    // First swoosh
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(150, now);
+    osc1.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+    gain1.gain.setValueAtTime(0.5, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    osc1.start(now);
+    osc1.stop(now + 0.4);
 
-    // Add a second hit
-    setTimeout(() => {
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.type = 'square';
-      osc2.frequency.setValueAtTime(800, ctx.currentTime);
-      gain2.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-      osc2.start(ctx.currentTime);
-      osc2.stop(ctx.currentTime + 0.2);
-    }, 200);
+    // Second hit
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(800, now + 0.25);
+    gain2.gain.setValueAtTime(0.4, now + 0.25);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+    osc2.start(now + 0.25);
+    osc2.stop(now + 0.5);
   }
 
   private playRoastDrop(ctx: AudioContext) {
-    // Punchy impact sound for each roast
+    const now = ctx.currentTime;
+    
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
     osc.connect(gain);
     gain.connect(ctx.destination);
-    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(400, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.15);
-    
-    gain.gain.setValueAtTime(0.4, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-    
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.2);
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
+    gain.gain.setValueAtTime(0.6, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc.start(now);
+    osc.stop(now + 0.2);
   }
 
   private playWinner(ctx: AudioContext) {
-    // Victory fanfare - ascending notes
+    const now = ctx.currentTime;
     const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
     
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
       osc.connect(gain);
       gain.connect(ctx.destination);
-      
       osc.type = 'square';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
       
-      const startTime = ctx.currentTime + i * 0.15;
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.2, startTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+      const startTime = now + i * 0.15;
+      osc.frequency.setValueAtTime(freq, startTime);
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.4, startTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25);
       
       osc.start(startTime);
       osc.stop(startTime + 0.3);
@@ -131,60 +145,50 @@ class SoundManager {
   }
 
   private playCountdown(ctx: AudioContext) {
-    // Single tick
+    const now = ctx.currentTime;
+    
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
     osc.connect(gain);
     gain.connect(ctx.destination);
-    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-    
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(880, now);
+    gain.gain.setValueAtTime(0.5, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+    osc.start(now);
+    osc.stop(now + 0.15);
   }
 
   private playVote(ctx: AudioContext) {
-    // Confirmation blip
+    const now = ctx.currentTime;
+    
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
     osc.connect(gain);
     gain.connect(ctx.destination);
-    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, ctx.currentTime);
-    osc.frequency.setValueAtTime(800, ctx.currentTime + 0.1);
-    
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-    
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.2);
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.linearRampToValueAtTime(900, now + 0.1);
+    gain.gain.setValueAtTime(0.5, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc.start(now);
+    osc.stop(now + 0.25);
   }
 
   private playError(ctx: AudioContext) {
-    // Error buzz
+    const now = ctx.currentTime;
+    
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
     osc.connect(gain);
     gain.connect(ctx.destination);
-    
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(150, ctx.currentTime);
-    
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.3);
+    osc.frequency.setValueAtTime(150, now);
+    gain.gain.setValueAtTime(0.5, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    osc.start(now);
+    osc.stop(now + 0.35);
   }
 }
 
-// Singleton instance
 export const soundManager = new SoundManager();

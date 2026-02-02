@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 // xAI uses OpenAI-compatible API
 const xai = new OpenAI({
@@ -49,6 +50,15 @@ export async function POST(req: NextRequest) {
     const context = previousRoasts?.length
       ? `Previous roasts in this battle:\n${previousRoasts.map((r: {agent: string, text: string}) => `${r.agent}: "${r.text}"`).join('\n')}\n\nNow respond to your opponent:`
       : 'This is your opening roast. Go first and set the tone:';
+
+    // Track new battles (when first roast is requested)
+    if (!previousRoasts?.length) {
+      try {
+        await supabase.rpc('increment_battles');
+      } catch {
+        // Silently fail if stats table doesn't exist yet
+      }
+    }
 
     const completion = await xai.chat.completions.create({
       model: 'grok-3-mini',

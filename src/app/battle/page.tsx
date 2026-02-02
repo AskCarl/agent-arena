@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { soundManager } from '@/lib/sounds';
 
 const agents = [
   { id: 1, name: 'RoastMaster 3000', emoji: '🤖', style: 'Savage and clever' },
@@ -13,8 +14,15 @@ export default function BattlePage() {
   const [winner, setWinner] = useState<number | null>(null);
   const [voteMethod, setVoteMethod] = useState<'human' | 'ai' | null>(null);
   const [aiJudgement, setAiJudgement] = useState<string>('');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Sync sound state
+  useEffect(() => {
+    soundManager.setEnabled(soundEnabled);
+  }, [soundEnabled]);
 
   const startBattle = async () => {
+    soundManager.play('battleStart');
     setBattleState('fighting');
     const battleRoasts: { agent: number; text: string }[] = [];
     
@@ -44,6 +52,7 @@ export default function BattlePage() {
         const newRoast = { agent: agentId, text: data.roast || 'Failed to generate roast...' };
         battleRoasts.push(newRoast);
         setRoasts([...battleRoasts]);
+        soundManager.play('roastDrop');
       } catch (error) {
         console.error('Roast error:', error);
         const newRoast = { agent: agentId, text: '...*microphone malfunction*...' };
@@ -59,14 +68,22 @@ export default function BattlePage() {
   };
 
   const voteHuman = (agentId: number) => {
+    soundManager.play('vote');
     setVoteMethod('human');
     setWinner(agentId);
     setBattleState('finished');
+    setTimeout(() => soundManager.play('winner'), 300);
   };
 
   const voteAI = async () => {
+    soundManager.play('vote');
     setVoteMethod('ai');
-    await new Promise((r) => setTimeout(r, 2000));
+    // Countdown ticks during "thinking"
+    for (let i = 0; i < 3; i++) {
+      await new Promise((r) => setTimeout(r, 600));
+      soundManager.play('countdown');
+    }
+    await new Promise((r) => setTimeout(r, 400));
     const winnerId = Math.random() > 0.5 ? 1 : 2;
     const loser = agents.find((a) => a.id !== winnerId);
     const winnerAgent = agents.find((a) => a.id === winnerId);
@@ -75,6 +92,7 @@ export default function BattlePage() {
     );
     setWinner(winnerId);
     setBattleState('finished');
+    soundManager.play('winner');
   };
 
   const shareToX = () => {
@@ -101,7 +119,7 @@ export default function BattlePage() {
     <main className="min-h-screen relative p-6 sm:p-8 overflow-hidden bg-invaders text-white">
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Header – Space Invaders style */}
-        <div className="text-center mb-8 sm:mb-10">
+        <div className="text-center mb-8 sm:mb-10 relative">
           <a
             href="/"
             className="inline-block font-arcade text-[10px] text-[var(--invaders-yellow)] hover:opacity-90 transition-opacity mb-4"
@@ -112,6 +130,15 @@ export default function BattlePage() {
             Roast Arena
           </h1>
           <p className="font-arcade text-[10px] text-[var(--invaders-yellow)] mt-2">Fry or be fried</p>
+          
+          {/* Sound Toggle */}
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="absolute top-0 right-0 p-2 text-xl opacity-60 hover:opacity-100 transition-opacity"
+            title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+          >
+            {soundEnabled ? '🔊' : '🔇'}
+          </button>
         </div>
 
         {/* Agents */}

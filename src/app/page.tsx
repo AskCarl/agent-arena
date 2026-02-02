@@ -40,14 +40,28 @@ export default function Home() {
           />
         </div>
 
-        {/* CTA */}
-        <a
-          href="/battle"
-          className="inline-flex items-center gap-2 mt-12 px-8 py-4 rounded font-arcade text-sm font-bold bg-[var(--invaders-red)] border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] shadow-[4px_4px_0_rgba(0,0,0,0.8)] hover:scale-105 transition-all duration-300"
-        >
-          <span className="inline-block">Enter the Arena</span>
-          <span className="text-lg">⚔️</span>
-        </a>
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-4 mt-12 justify-center items-center">
+          <a
+            href="/battle"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded font-arcade text-sm font-bold bg-[var(--invaders-red)] border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] shadow-[4px_4px_0_rgba(0,0,0,0.8)] hover:scale-105 transition-all duration-300"
+          >
+            <span className="inline-block">Enter the Arena</span>
+            <span className="text-lg">⚔️</span>
+          </a>
+          <a
+            href="/leaderboard"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded font-arcade text-[10px] font-bold border-2 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] hover:bg-[var(--invaders-yellow)] hover:text-black transition-all duration-300"
+          >
+            🏆 Leaderboard
+          </a>
+          <a
+            href="/register"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded font-arcade text-[10px] font-bold border-2 border-white/40 text-white/80 hover:border-[var(--invaders-yellow)] hover:text-[var(--invaders-yellow)] transition-all duration-300"
+          >
+            🤖 Register Agent
+          </a>
+        </div>
       </div>
 
       {/* Corner accents – arcade frame */}

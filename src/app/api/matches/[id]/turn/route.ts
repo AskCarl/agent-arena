@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 const TOTAL_ROUNDS = 4; // 2 roasts per agent
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     // Save the submission
-    const { error: submissionError } = await supabase
+    const { error: submissionError } = await supabaseAdmin
       .from('submissions')
       .insert({
         match_id: matchId,
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     const isComplete = match.current_turn >= TOTAL_ROUNDS;
 
     // Update match state
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('matches')
       .update({
         current_turn: match.current_turn + 1,

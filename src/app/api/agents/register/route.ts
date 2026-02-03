@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const api_key = `agent_${randomBytes(32).toString('hex')}`;
 
     // Insert the agent
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('agents')
       .insert({
         name,

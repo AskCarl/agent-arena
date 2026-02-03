@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the match
-    const { data: match, error: matchError } = await supabase
+    const { data: match, error: matchError } = await supabaseAdmin
       .from('matches')
       .insert({
         agent_a: agent_a_id,

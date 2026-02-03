@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface RouteParams {
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     const loserId = winner_id === match.agent_a ? match.agent_b : match.agent_a;
 
     // Update match with winner
-    const { error: updateMatchError } = await supabase
+    const { error: updateMatchError } = await supabaseAdmin
       .from('matches')
       .update({
         winner_id,
@@ -49,10 +49,10 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     // Update winner stats
-    await supabase.rpc('increment_wins', { agent_id: winner_id });
+    await supabaseAdmin.rpc('increment_wins', { agent_id: winner_id });
 
     // Update loser stats
-    await supabase.rpc('increment_losses', { agent_id: loserId });
+    await supabaseAdmin.rpc('increment_losses', { agent_id: loserId });
 
     // Fetch updated agents
     const { data: agents } = await supabase

@@ -170,7 +170,7 @@ export default function BattlePage() {
   const shareToX = () => {
     if (!winner || !selectedAgentA || !selectedAgentB) return;
     const loser = winner.id === selectedAgentA.id ? selectedAgentB : selectedAgentA;
-    const tweetText = `🔥 ROAST BATTLE RESULTS 🔥\n\n${winner.name} just DESTROYED ${loser.name}!\n\nThink your AI can do better? Enter the arena 👇\nhttps://agent-arena-nu.vercel.app\n\n#AgentArena #AIBattle #RoastBattle`;
+    const tweetText = `🔥 ROAST BATTLE RESULTS 🔥\n\n${winner.name} just DESTROYED ${loser.name} on @AgentArenaGame!\n\nThink your AI can do better? Enter the arena 👇\nhttps://agent-arena-nu.vercel.app\n\nby @meebit1 #AgentArena #AIBattle`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
   };
 
@@ -178,7 +178,7 @@ export default function BattlePage() {
     if (!selectedAgentA || !selectedAgentB || roasts.length < 2) return;
     const roastA = roasts.find(r => r.agentId === selectedAgentA.id)?.text.slice(0, 100) || '';
     const roastB = roasts.find(r => r.agentId === selectedAgentB.id)?.text.slice(0, 100) || '';
-    const tweetText = `🔥 WHO WON THIS ROAST BATTLE? 🔥\n\n🤖 ${selectedAgentA.name}:\n"${roastA}..."\n\n🔥 ${selectedAgentB.name}:\n"${roastB}..."\n\nVote below! 👇\n\n#AgentArena #AIBattle`;
+    const tweetText = `🔥 WHO WON THIS ROAST BATTLE? 🔥\n\n🤖 ${selectedAgentA.name}:\n"${roastA}..."\n\n🔥 ${selectedAgentB.name}:\n"${roastB}..."\n\nVote! @AgentArenaGame by @meebit1\n\n#AgentArena`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
   };
 
@@ -455,20 +455,46 @@ export default function BattlePage() {
             )}
 
             {battleState === 'finished' && (
-              <div className="mt-8 flex flex-wrap gap-4 justify-center">
-                <button
-                  onClick={resetBattle}
-                  className="px-6 py-3 rounded font-arcade text-[8px] font-bold border-4 border-[var(--invaders-red)] text-[var(--invaders-red)] hover:bg-[var(--invaders-red)] hover:text-white shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition-all duration-200"
-                >
-                  New Battle
-                </button>
-                <button
-                  onClick={shareToX}
-                  className="px-6 py-3 rounded font-arcade text-[8px] font-bold border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] hover:bg-[var(--invaders-yellow)] hover:text-black shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition-all duration-200"
-                >
-                  Share Results on X
-                </button>
-              </div>
+              <>
+                {/* Follow Us Card */}
+                <div className="mt-6 p-4 rounded bg-gradient-to-r from-[var(--invaders-yellow)]/10 to-[var(--invaders-red)]/10 border-2 border-[var(--invaders-yellow)]/50">
+                  <p className="font-arcade text-[8px] text-center text-white mb-3">🐦 Follow for more battles & updates!</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    <a
+                      href="https://twitter.com/intent/follow?screen_name=AgentArenaGame"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded font-arcade text-[8px] font-bold bg-[#1DA1F2] text-white hover:bg-[#1a8cd8] transition-all duration-200"
+                    >
+                      Follow @AgentArenaGame
+                    </a>
+                    <a
+                      href="https://twitter.com/intent/follow?screen_name=meebit1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded font-arcade text-[8px] font-bold bg-black/60 border-2 border-[#1DA1F2] text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white transition-all duration-200"
+                    >
+                      Follow @meebit1
+                    </a>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-6 flex flex-wrap gap-4 justify-center">
+                  <button
+                    onClick={resetBattle}
+                    className="px-6 py-3 rounded font-arcade text-[8px] font-bold border-4 border-[var(--invaders-red)] text-[var(--invaders-red)] hover:bg-[var(--invaders-red)] hover:text-white shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition-all duration-200"
+                  >
+                    New Battle
+                  </button>
+                  <button
+                    onClick={shareToX}
+                    className="px-6 py-3 rounded font-arcade text-[8px] font-bold border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] hover:bg-[var(--invaders-yellow)] hover:text-black shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition-all duration-200"
+                  >
+                    Share Results on X
+                  </button>
+                </div>
+              </>
             )}
           </div>
         )}

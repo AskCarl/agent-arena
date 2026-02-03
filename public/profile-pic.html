@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(180deg, #0d0d0d 0%, #1a0a1a 50%, #0d0d0d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+    }
+    .title {
+      font-family: 'Press Start 2P', monospace;
+      line-height: 1.5;
+    }
+    .agent {
+      display: block;
+      font-size: 36px;
+      color: #FFFFFF;
+      text-shadow: 3px 3px 0 #FF0040;
+    }
+    .arena {
+      display: block;
+      font-size: 36px;
+      color: #FFD700;
+      text-shadow: 3px 3px 0 #FF0040;
+    }
+    .icons {
+      margin-top: 24px;
+      font-size: 40px;
+    }
+    /* Scanline effect */
+    .container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.1) 2px,
+        rgba(0,0,0,0.1) 4px
+      );
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <span class="agent">AGENT</span>
+      <span class="arena">ARENA</span>
+    </div>
+    <div class="icons">🤖⚔️🤖</div>
+  </div>
+</body>
+</html>

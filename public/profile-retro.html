@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(180deg, #000000 0%, #0a0020 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      transform: skewX(-5deg);
+    }
+    .title {
+      font-family: 'Bungee', sans-serif;
+      font-size: 52px;
+      line-height: 1.1;
+      background: linear-gradient(180deg, #FFE55C 0%, #FFB800 40%, #FF6B00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(3px 3px 0 #8B0000) 
+              drop-shadow(6px 6px 0 #4A0000)
+              drop-shadow(9px 9px 0 #2A0000);
+      letter-spacing: 2px;
+    }
+    .agent { display: block; }
+    .arena { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <span class="agent">AGENT</span>
+      <span class="arena">ARENA</span>
+    </div>
+  </div>
+</body>
+</html>

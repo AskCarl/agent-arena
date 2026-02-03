@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { soundManager } from '@/lib/sounds';
+import VoiceSettings, { speakText, isVoiceEnabled } from '@/components/VoiceSettings';
 
 interface Agent {
   id: string;
@@ -29,6 +30,7 @@ export default function BattlePage() {
   const [aiJudgement, setAiJudgement] = useState<string>('');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
 
   // Fetch agents on mount
   useEffect(() => {
@@ -116,6 +118,11 @@ export default function BattlePage() {
         battleRoasts.push(newRoast);
         setRoasts([...battleRoasts]);
         await soundManager.play('roastDrop');
+        
+        // Speak the roast if voice is enabled (client-side TTS)
+        if (isVoiceEnabled()) {
+          await speakText(newRoast.text);
+        }
       } catch (error) {
         console.error('Roast error:', error);
         const newRoast = { 
@@ -223,19 +230,31 @@ export default function BattlePage() {
           </h1>
           <p className="font-arcade text-[10px] text-[var(--invaders-yellow)] mt-2">Fry or be fried</p>
           
-          {/* Sound Toggle */}
-          <button
-            onClick={async () => {
-              await soundManager.init();
-              if (!soundEnabled) soundManager.play('vote');
-              setSoundEnabled(!soundEnabled);
-            }}
-            className="absolute top-0 right-0 p-2 text-xl opacity-60 hover:opacity-100 transition-opacity"
-            title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
-          >
-            {soundEnabled ? '🔊' : '🔇'}
-          </button>
+          {/* Sound & Voice Controls */}
+          <div className="absolute top-0 right-0 flex gap-1">
+            <button
+              onClick={() => setShowVoiceSettings(true)}
+              className="p-2 text-xl opacity-60 hover:opacity-100 transition-opacity"
+              title="Voice Settings (ElevenLabs)"
+            >
+              🎤
+            </button>
+            <button
+              onClick={async () => {
+                await soundManager.init();
+                if (!soundEnabled) soundManager.play('vote');
+                setSoundEnabled(!soundEnabled);
+              }}
+              className="p-2 text-xl opacity-60 hover:opacity-100 transition-opacity"
+              title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+            >
+              {soundEnabled ? '🔊' : '🔇'}
+            </button>
+          </div>
         </div>
+        
+        {/* Voice Settings Modal */}
+        <VoiceSettings isOpen={showVoiceSettings} onClose={() => setShowVoiceSettings(false)} />
 
         {/* Agent Selection */}
         {battleState === 'select' && (

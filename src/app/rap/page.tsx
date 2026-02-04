@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { soundManager } from '@/lib/sounds';
+
+// Background beat for battles
+const BATTLE_BEAT_URL = '/audio/battle-beat.mp3';
 
 // Server-side TTS function (no API key needed from user)
 async function speakBars(text: string, voice: string = 'adam'): Promise<void> {
@@ -65,7 +68,9 @@ export default function RapBattlePage() {
   const [aiJudgement, setAiJudgement] = useState<string>('');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [beatEnabled, setBeatEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+  const beatRef = useRef<HTMLAudioElement | null>(null);
 
   const TOPICS = [
     'Silicon Valley',
@@ -123,6 +128,13 @@ export default function RapBattlePage() {
     await soundManager.init();
     await soundManager.play('battleStart');
     setBattleState('fighting');
+    
+    // Start the beat
+    if (beatEnabled && beatRef.current) {
+      beatRef.current.volume = 0.3; // Background volume
+      beatRef.current.currentTime = 0;
+      beatRef.current.play().catch(() => {});
+    }
     
     const battleBars: RapBar[] = [];
     
@@ -274,6 +286,21 @@ export default function RapBattlePage() {
       console.error('Round 3 error:', error);
     }
     
+    // Fade out the beat
+    if (beatRef.current) {
+      const fadeOut = setInterval(() => {
+        if (beatRef.current && beatRef.current.volume > 0.05) {
+          beatRef.current.volume -= 0.05;
+        } else {
+          if (beatRef.current) {
+            beatRef.current.pause();
+            beatRef.current.volume = 0.3;
+          }
+          clearInterval(fadeOut);
+        }
+      }, 100);
+    }
+    
     setBattleState('voting');
   };
 
@@ -317,6 +344,12 @@ export default function RapBattlePage() {
   };
 
   const resetBattle = () => {
+    // Stop the beat if playing
+    if (beatRef.current) {
+      beatRef.current.pause();
+      beatRef.current.currentTime = 0;
+    }
+    
     setBattleState('select');
     setBars([]);
     setRound3Bars(null);
@@ -363,9 +396,16 @@ export default function RapBattlePage() {
           {/* Sound & Voice Controls */}
           <div className="absolute top-0 right-0 flex gap-1">
             <button
+              onClick={() => setBeatEnabled(!beatEnabled)}
+              className={`p-2 text-xl transition-opacity ${beatEnabled ? 'opacity-100' : 'opacity-40'}`}
+              title={beatEnabled ? 'Beat ON' : 'Beat OFF'}
+            >
+              🎵
+            </button>
+            <button
               onClick={() => setVoiceEnabled(!voiceEnabled)}
               className={`p-2 text-xl transition-opacity ${voiceEnabled ? 'opacity-100' : 'opacity-40'}`}
-              title={voiceEnabled ? 'Voice ON - Click to mute' : 'Voice OFF - Click to enable'}
+              title={voiceEnabled ? 'Voice ON' : 'Voice OFF'}
             >
               🎤
             </button>
@@ -382,6 +422,9 @@ export default function RapBattlePage() {
             </button>
           </div>
         </div>
+        
+        {/* Hidden audio element for beat */}
+        <audio ref={beatRef} src={BATTLE_BEAT_URL} loop />
 
         {/* Topic Display */}
         {battleState !== 'select' && (

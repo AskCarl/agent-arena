@@ -2,7 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { soundManager } from '@/lib/sounds';
-import VoiceSettings, { speakText, isVoiceEnabled } from '@/components/VoiceSettings';
+
+// Server-side TTS function (no API key needed from user)
+async function speakBars(text: string, voice: string = 'adam'): Promise<void> {
+  try {
+    const response = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, voice }),
+    });
+    
+    if (!response.ok) return;
+    
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    
+    return new Promise((resolve) => {
+      audio.onended = () => resolve();
+      audio.onerror = () => resolve();
+      audio.play().catch(() => resolve());
+    });
+  } catch (error) {
+    console.error('TTS error:', error);
+  }
+}
 
 interface Agent {
   id: string;
@@ -40,8 +64,8 @@ export default function RapBattlePage() {
   const [voteMethod, setVoteMethod] = useState<'human' | 'ai' | null>(null);
   const [aiJudgement, setAiJudgement] = useState<string>('');
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
 
   const TOPICS = [
     'Silicon Valley',
@@ -138,8 +162,9 @@ export default function RapBattlePage() {
           setBars([...battleBars]);
           await soundManager.play('roastDrop');
           
-          if (isVoiceEnabled()) {
-            await speakText(newBar.text);
+          if (voiceEnabled) {
+            const voice = agent.id === selectedAgentA?.id ? 'adam' : 'arnold';
+            await speakBars(newBar.text, voice);
           }
         } catch (error) {
           console.error('Rap generation error:', error);
@@ -222,8 +247,8 @@ export default function RapBattlePage() {
       };
       setBars([...battleBars, barA]);
       
-      if (isVoiceEnabled()) {
-        await speakText(barA.text);
+      if (voiceEnabled) {
+        await speakBars(barA.text, 'adam');
       }
       
       await new Promise(r => setTimeout(r, 2000));
@@ -238,8 +263,8 @@ export default function RapBattlePage() {
       };
       setBars([...battleBars, barA, barB]);
       
-      if (isVoiceEnabled()) {
-        await speakText(barB.text);
+      if (voiceEnabled) {
+        await speakBars(barB.text, 'arnold');
       }
       
       await new Promise(r => setTimeout(r, 1000));
@@ -338,9 +363,9 @@ export default function RapBattlePage() {
           {/* Sound & Voice Controls */}
           <div className="absolute top-0 right-0 flex gap-1">
             <button
-              onClick={() => setShowVoiceSettings(true)}
-              className="p-2 text-xl opacity-60 hover:opacity-100 transition-opacity"
-              title="Voice Settings"
+              onClick={() => setVoiceEnabled(!voiceEnabled)}
+              className={`p-2 text-xl transition-opacity ${voiceEnabled ? 'opacity-100' : 'opacity-40'}`}
+              title={voiceEnabled ? 'Voice ON - Click to mute' : 'Voice OFF - Click to enable'}
             >
               🎤
             </button>
@@ -357,8 +382,6 @@ export default function RapBattlePage() {
             </button>
           </div>
         </div>
-        
-        <VoiceSettings isOpen={showVoiceSettings} onClose={() => setShowVoiceSettings(false)} />
 
         {/* Topic Display */}
         {battleState !== 'select' && (

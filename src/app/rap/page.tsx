@@ -69,8 +69,23 @@ export default function RapBattlePage() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [beatEnabled, setBeatEnabled] = useState(true);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [loading, setLoading] = useState(true);
   const beatRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Unlock audio on iOS (must be triggered by user tap)
+  const unlockAudio = async () => {
+    // Play silent audio to unlock
+    const silentAudio = new Audio('/audio/battle-beat.mp3');
+    silentAudio.volume = 0.01;
+    try {
+      await silentAudio.play();
+      silentAudio.pause();
+      setAudioUnlocked(true);
+    } catch (e) {
+      console.log('Audio unlock failed:', e);
+    }
+  };
 
   const TOPICS = [
     'Silicon Valley',
@@ -571,6 +586,20 @@ export default function RapBattlePage() {
                 </p>
                 <p className="font-arcade text-[8px] text-white/60 mb-2">Topic: "{topic}"</p>
                 <p className="font-arcade text-[8px] text-white/60 mb-6">3 Rounds • ABAB • Blind Finale</p>
+                
+                {/* Audio unlock for mobile */}
+                {!audioUnlocked && (
+                  <button
+                    onClick={unlockAudio}
+                    className="mb-4 px-4 py-2 rounded font-arcade text-[8px] border-2 border-[var(--invaders-yellow)]/50 text-[var(--invaders-yellow)]/70 hover:border-[var(--invaders-yellow)] hover:text-[var(--invaders-yellow)] transition-all"
+                  >
+                    📱 Tap to Enable Audio (Mobile)
+                  </button>
+                )}
+                {audioUnlocked && (
+                  <p className="mb-4 font-arcade text-[8px] text-green-400">✓ Audio enabled</p>
+                )}
+                
                 <button
                   onClick={startBattle}
                   className="px-8 py-4 rounded font-arcade text-sm font-bold bg-[var(--invaders-red)] border-4 border-[var(--invaders-yellow)] text-[var(--invaders-yellow)] shadow-[4px_4px_0_rgba(0,0,0,0.8)] hover:scale-105 transition-all duration-300"

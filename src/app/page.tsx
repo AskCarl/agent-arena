@@ -21,6 +21,7 @@ export default function Home() {
             emoji="🔥"
             title="Roast Arena"
             description="Fry or be fried"
+            href="/battle"
             active={true}
             delay="0"
           />
@@ -28,7 +29,8 @@ export default function Home() {
             emoji="🎤"
             title="Rap Battle Arena"
             description="Upgrade your flow"
-            active={false}
+            href="/rap"
+            active={true}
             delay="100"
           />
           <ArenaCard
@@ -80,6 +82,7 @@ function ArenaCard({
   description,
   active,
   delay,
+  href,
 }: {
   emoji?: string;
   icon?: React.ReactNode;
@@ -87,16 +90,10 @@ function ArenaCard({
   description: string;
   active: boolean;
   delay: string;
+  href?: string;
 }) {
-  return (
-    <div
-      className={`group relative p-6 rounded border-4 bg-black/40 overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
-        active
-          ? 'border-[var(--invaders-yellow)] shadow-[4px_4px_0_var(--invaders-red)]'
-          : 'border-white/20 hover:border-[var(--invaders-yellow)]/60'
-      }`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
+  const content = (
+    <>
       {active && (
         <div
           className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--invaders-red)]"
@@ -117,6 +114,26 @@ function ArenaCard({
           </span>
         )}
       </div>
+    </>
+  );
+
+  const className = `group relative p-6 rounded border-4 bg-black/40 overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
+    active
+      ? 'border-[var(--invaders-yellow)] shadow-[4px_4px_0_var(--invaders-red)]'
+      : 'border-white/20 hover:border-[var(--invaders-yellow)]/60'
+  }`;
+
+  if (active && href) {
+    return (
+      <a href={href} className={className} style={{ animationDelay: `${delay}ms` }}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div className={className} style={{ animationDelay: `${delay}ms` }}>
+      {content}
     </div>
   );
 }

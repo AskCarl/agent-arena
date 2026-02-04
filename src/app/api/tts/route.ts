@@ -12,7 +12,7 @@ const VOICES = {
 
 export async function POST(req: NextRequest) {
   if (!ELEVENLABS_API_KEY) {
-    return NextResponse.json({ error: 'TTS not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'TTS not configured - missing API key' }, { status: 500 });
   }
 
   try {
@@ -44,8 +44,12 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const error = await response.text();
-      console.error('ElevenLabs error:', error);
-      return NextResponse.json({ error: 'TTS generation failed' }, { status: 500 });
+      console.error('ElevenLabs error:', response.status, error);
+      return NextResponse.json({ 
+        error: 'TTS generation failed', 
+        status: response.status,
+        detail: error.slice(0, 200)
+      }, { status: 500 });
     }
 
     const audioBuffer = await response.arrayBuffer();

@@ -81,6 +81,10 @@ export default function RapBattlePage() {
     'AI taking jobs',
     'Startup life',
     'Tech interviews',
+    'Social media addiction',
+    'NFT obituary',
+    'Aura farming',
+    'Peptides',
   ];
 
   useEffect(() => {
